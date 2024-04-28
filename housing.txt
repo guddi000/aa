@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+
 #import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
@@ -9,7 +10,7 @@ from keras.optimizers import Adam
 from keras.layers import LeakyReLU, Dropout
 
 # Load the dataset
-file_path = "C:/Users/Lenovo/Desktop/DL/Boston_Housing.csv"
+file_path = 'Boston_Housing.csv'
 data = pd.read_csv(file_path)
 
 # Preprocess the data
@@ -60,4 +61,4 @@ predictions = model.predict(X_test_scaled)
 # Print some predictions and actual values
 print("Some Predictions and Actual Values:")
 for i in range(10):
-    print("Predicted Price:", predictions[i][0], "Actual Price:", y_test.iloc[i])
+    print("Predicted Price:", predictions[i][0], "Actual Price:", y_test.iloc[i])
