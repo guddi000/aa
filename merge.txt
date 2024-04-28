@@ -78,3 +78,99 @@ for(i=0;i<n;i++)
  // Cout<<Stop-Start
 return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////
+
+#include<iostream>
+#include<stdlib.h>
+#include<omp.h> // Including the OpenMP header file for parallel programming support.
+using namespace std; // Using the standard namespace to avoid naming conflicts.
+void mergesort(int a[],int i,int j); // Function declaration for mergesort.
+void merge(int a[],int i1,int j1,int i2,int j2); // Function declaration for merge.
+void mergesort(int a[],int i,int j) // Definition of mergesort function.
+{
+int mid; // Declaration of variable 'mid' to store the middle index.
+if(i<j) // Checking if the start index is less than the end index.
+{
+ mid=(i+j)/2; // Calculating the middle index.
+ #pragma omp parallel sections // Starting a parallel sections block for parallel execution.
+ {
+ #pragma omp section // Starting a parallel section for the first half of the array.
+ {
+ mergesort(a,i,mid); // Recursively calling mergesort for the first half.
+ }
+ #pragma omp section // Starting a parallel section for the second half of the array.
+ {
+ mergesort(a,mid+1,j); // Recursively calling mergesort for the second half.
+ }
+ }
+ merge(a,i,mid,mid+1,j); // Merging the sorted halves.
+}
+}
+void merge(int a[],int i1,int j1,int i2,int j2) // Definition of merge function.
+{
+int temp[1000]; // Temporary array to store merged elements.
+int i,j,k; // Declaration of loop control variables.
+i=i1; // Initializing i with the starting index of the first half.
+j=i2; // Initializing j with the starting index of the second half.
+k=0; // Initializing k for the temporary array.
+while(i<=j1 && j<=j2) // Merging elements until both halves have elements.
+{
+ if(a[i]<a[j]) // Comparing elements from both halves.
+ {
+ temp[k++]=a[i++]; // Storing the smaller element in the temporary array.
+ }
+ else
+ {
+ temp[k++]=a[j++]; // Storing the smaller element in the temporary array.
+ }
+}
+while(i<=j1) // Copying remaining elements from the first half.
+{
+ temp[k++]=a[i++];
+}
+while(j<=j2) // Copying remaining elements from the second half.
+{
+ temp[k++]=a[j++];
+}
+for(i=i1,j=0;i<=j2;i++,j++) // Copying merged elements back to the original array.
+{
+ a[i]=temp[j];
+}
+}
+int main() // Definition of main function.
+{
+int *a,n,i; // Declaration of pointer 'a', size 'n', and loop control variable 'i'.
+cout<<"\n enter total no of elements=>"; // Prompting the user to enter the total number of elements.
+cin>>n; // Accepting the total number of elements from the user.
+a= new int[n]; // Allocating memory dynamically for the array.
+cout<<"\n enter elements=>"; // Prompting the user to enter the elements.
+for(i=0;i<n;i++) // Loop to input elements into the array.
+{
+ cin>>a[i]; // Accepting elements from the user.
+}
+ // start=.......
+//#pragma omp…..
+mergesort(a, 0, n-1); // Calling mergesort to sort the array.
+// stop…….
+cout<<"\n sorted array is=>"; // Displaying a message indicating the sorted array will be printed.
+for(i=0;i<n;i++) // Loop to print the sorted array.
+{
+ cout<<"\n"<<a[i]; // Printing each element of the sorted array.
+}
+ // Cout<<Stop-Start
+return 0; // Returning 0 to indicate successful execution of the program.
+}
