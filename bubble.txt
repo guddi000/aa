@@ -16,6 +16,12 @@ void simpleBubble(int arr[], int n)
             }
         }
     }
+    cout<<"Sorting Array: ";
+    for (int i = 0; i < n ; i++)
+    {
+        cout<<" "<<arr[i];
+    }
+    cout<<endl;
     double end_time = omp_get_wtime();
 
     cout << "Simple Bubble Sort Time: " << (end_time - start_time) * 1000 << " milliseconds" << endl;
@@ -35,6 +41,12 @@ void parallelBubble(int arr[], int n)
             }
         }
     }
+    cout<<"Sorting Array: ";
+    for (int i = 0; i < n ; i++)
+    {
+        cout<<" "<<arr[i];
+    }
+    cout<<endl;
     double end_time = omp_get_wtime();
 
     cout << "Parallel Bubble Sort Time: " << (end_time - start_time) * 1000 << " milliseconds" << endl;
@@ -42,8 +54,18 @@ void parallelBubble(int arr[], int n)
 
 int main()
 {
-    int arr[] = {8, 4, 5, 7, 2};
-    int n = sizeof(arr) / sizeof(arr[0]);
+    // int arr[] = {8, 4, 5, 7, 2};
+    const int MAX_SIZE = 100; // Maximum size of the array
+    int arr[MAX_SIZE];        // Declare an array
+    int n;                    // Variable to store the size of the array
+
+    std::cout << "Enter the number of elements: ";
+    std::cin >> n;
+
+    for (int i = 0; i < n; ++i) {
+        std::cout << "Enter element " << i + 1 << ": ";
+        std::cin >> arr[i];
+    }
 
     simpleBubble(arr, n);
     parallelBubble(arr, n);
