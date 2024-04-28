@@ -105,3 +105,84 @@ int main() {
 
     return 0;
 }
+
+
+
+
+
+///////////////////////////
+
+#include <iostream>
+#include <vector>
+#include <stack>
+#include <omp.h>
+
+using namespace std;
+
+const int MAX = 100000;
+vector<int> graph[MAX]; // Adjacency list representation of the graph
+bool visited[MAX];      // Array to track visited nodes
+
+// Depth First Search (DFS) function
+void dfs(int node) {
+    stack<int> s;
+    s.push(node); // Push the starting node to the stack
+
+    // While the stack is not empty
+    while (!s.empty()) {
+        int curr_node = s.top(); // Get the top node from the stack
+        s.pop(); // Remove the top node from the stack
+
+        // If the current node has not been visited
+        if (!visited[curr_node]) {
+            visited[curr_node] = true; // Mark the current node as visited
+
+            // Print the current node (optional)
+            cout << curr_node << " ";
+
+            // Iterate over the neighbors of the current node
+#pragma omp parallel for
+            for (int i = 0; i < graph[curr_node].size(); i++) {
+                int adj_node = graph[curr_node][i]; // Get the adjacent node
+                if (!visited[adj_node]) { // If the adjacent node has not been visited
+                    s.push(adj_node); // Push the adjacent node to the stack
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    int n, m, start_node;
+    cout << "Enter No of Nodes, Edges, and start node: ";
+    cin >> n >> m >> start_node;
+    
+    // Input the edges of the graph
+    cout << "Enter Pair of edges:\n";
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        // Add edges to the adjacency list representation of the graph
+        graph[u].push_back(v);
+        graph[v].push_back(u);
+    }
+    
+    // Initialize visited array to false
+#pragma omp parallel for
+    for (int i = 0; i < n; i++) {
+        visited[i] = false;
+    }
+    
+    // Perform DFS from the start node
+    dfs(start_node);
+    
+    // Optionally, print visited nodes (uncomment if needed)
+    /*
+    for (int i = 0; i < n; i++) {
+        if (visited[i]) {
+            cout << i << " ";
+        }
+    }
+    */
+    return 0;
+}
