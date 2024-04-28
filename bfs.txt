@@ -65,3 +65,122 @@ int main() {
 
     return 0;  // Return 0 to indicate successful program execution
 }
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <omp.h>
+#include <chrono>
+
+using namespace std;
+using namespace std::chrono;
+
+// Function to perform BFS sequentially
+void simpleBFS(vector<vector<int>>& graph, int startNode, vector<bool>& visited) {
+    queue<int> q;
+    q.push(startNode);
+    visited[startNode] = true;
+
+    while (!q.empty()) {
+        int currentNode = q.front();
+        q.pop();
+
+        for (int neighbor : graph[currentNode]) {
+            if (!visited[neighbor]) {
+                visited[neighbor] = true;
+                q.push(neighbor);
+            }
+        }
+    }
+}
+
+// Function to perform BFS in parallel using OpenMP
+void parallelBFS(vector<vector<int>>& graph, int startNode, vector<bool>& visited) {
+    queue<int> q;
+    q.push(startNode);
+    visited[startNode] = true;
+
+    while (!q.empty()) {
+        int currentNode = q.front();
+        q.pop();
+
+#pragma omp parallel for
+        for (int i = 0; i < graph[currentNode].size(); ++i) {
+            int neighbor = graph[currentNode][i];
+            if (!visited[neighbor]) {
+                visited[neighbor] = true;
+                q.push(neighbor);
+            }
+        }
+    }
+}
+
+int main() {
+    int numNodes, numEdges;
+    cout << "Enter number of nodes and edges: ";
+    cin >> numNodes >> numEdges;
+
+    vector<vector<int>> graph(numNodes);
+    cout << "Enter edges:\n";
+    for (int i = 0; i < numEdges; ++i) {
+        int u, v;
+        cin >> u >> v;
+        graph[u].push_back(v);
+    }
+
+    int startNode;
+    cout << "Enter starting node for BFS: ";
+    cin >> startNode;
+
+    // Initialize visited array for both BFS implementations
+    vector<bool> visited_simple(numNodes, false);
+    vector<bool> visited_parallel(numNodes, false);
+
+    // Measure time for simple BFS
+    auto simple_start = high_resolution_clock::now();
+    simpleBFS(graph, startNode, visited_simple);
+    auto simple_stop = high_resolution_clock::now();
+    auto simple_duration = duration_cast<milliseconds>(simple_stop - simple_start);
+
+    // Measure time for parallel BFS
+    auto parallel_start = high_resolution_clock::now();
+    parallelBFS(graph, startNode, visited_parallel);
+    auto parallel_stop = high_resolution_clock::now();
+    auto parallel_duration = duration_cast<milliseconds>(parallel_stop - parallel_start);
+
+    // Print visited nodes for both BFS implementations
+    cout << "Visited nodes (Simple BFS): ";
+    for (int i = 0; i < numNodes; ++i) {
+        if (visited_simple[i]) {
+            cout << i << " ";
+        }
+    }
+    cout << endl;
+
+    cout << "Visited nodes (Parallel BFS): ";
+    for (int i = 0; i < numNodes; ++i) {
+        if (visited_parallel[i]) {
+            cout << i << " ";
+        }
+    }
+    cout << endl;
+
+    // Print execution times
+    cout << "Simple BFS time: " << simple_duration.count() << " milliseconds" << endl;
+    cout << "Parallel BFS time: " << parallel_duration.count() << " milliseconds" << endl;
+
+    return 0;
+}
